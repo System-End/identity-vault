@@ -427,4 +427,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  # shut chrome up in logs
+  get "/.well-known/appspecific/com.chrome.devtools.json", to: proc { [204, {}, []] }
+
 end
