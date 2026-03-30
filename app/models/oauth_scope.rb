@@ -120,13 +120,19 @@ class OAuthScope
       name: "set_slack_id",
       description: "Associate Slack IDs with identities",
       icon: "slack"
+    ),
+    new(
+      name: "theseus:send_mail",
+      description: "Send physical mail to your address (your address stays private)",
+      icon: "email",
+      consent_fields: []
     )
   ].freeze
 
   BY_NAME = ALL.index_by(&:name).freeze
 
   COMMUNITY_ALLOWED = %w[openid profile email name slack_id verification_status].freeze
-  HQ_OFFICIAL_SCOPES = (COMMUNITY_ALLOWED + %w[basic_info birthdate phone address]).freeze
+  HQ_OFFICIAL_SCOPES = (COMMUNITY_ALLOWED + %w[basic_info birthdate phone address theseus:send_mail]).freeze
   SUPER_ADMIN_SCOPES = (HQ_OFFICIAL_SCOPES + %w[legal_name]).freeze
   # set_slack_id intentionally omitted from all tiers — valid but not assignable via UI
 

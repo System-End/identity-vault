@@ -47,14 +47,40 @@ class Rack::Attack
     end
   end
 
+  # --- Token Exchange / S2S / JWKS ---
+
+  throttle("token_exchange/client", limit: 10, period: 1.minute) do |req|
+    if req.path == "/api/v1/token/exchange" && req.post?
+      ActionController::HttpAuthentication::Basic.user_name_and_password(req).first rescue req.ip
+    end
+  end
+
+  throttle("s2s/client", limit: 30, period: 1.minute) do |req|
+    if req.path.start_with?("/api/v1/s2s/") && req.get?
+      ActionController::HttpAuthentication::Basic.user_name_and_password(req).first rescue req.ip
+    end
+  end
+
+  throttle("jwks/ip", limit: 60, period: 1.minute) do |req|
+    req.ip if req.path == "/.well-known/jwks.json" && req.get?
+  end
+
+  throttle("revocations/client", limit: 20, period: 1.minute) do |req|
+    if req.path.start_with?("/api/v1/revocations/")
+      ActionController::HttpAuthentication::Basic.user_name_and_password(req).first rescue req.ip
+    end
+  end
+
   self.throttled_responder = lambda do |env|
-    headers = {
-      "Content-Type" => "text/html",
-      "Retry-After" => "300" #
-    }
+    request = Rack::Request.new(env)
 
-    message = "slow your roll!"
-
-    [ 429, headers, [ message ] ]
+    if request.path.start_with?("/api/") || request.path == "/.well-known/jwks.json"
+      headers = { "Content-Type" => "application/json", "Retry-After" => "60" }
+      body = '{"error":"rate_limited","retry_after":60}'
+      [ 429, headers, [ body ] ]
+    else
+      headers = { "Content-Type" => "text/html", "Retry-After" => "300" }
+      [ 429, headers, [ "slow your roll!" ] ]
+    end
   end
 end

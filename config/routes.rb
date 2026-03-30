@@ -377,6 +377,8 @@ Rails.application.routes.draw do
   end
 
 
+  get "/.well-known/jwks.json", to: "well_known#jwks"
+
   namespace :api do
     namespace :v1 do
       resources :identities, only: [ :show, :index ] do
@@ -387,6 +389,16 @@ Rails.application.routes.draw do
       get "/me", to: "identities#me"
       get "/hcb", to: "hcb#show"
       get "/health_check", to: "health_check#show"
+
+      # Token exchange (delegated OBO flow)
+      post "token/exchange", to: "token_exchange#create"
+
+      # Server-to-server endpoints (mTLS + Basic auth)
+      get "s2s/identities/:id/address", to: "s2s#address"
+
+      # JTI revocation (S2S authenticated)
+      post "revocations/jti", to: "revocations#create_jti"
+      get "revocations/jtis", to: "revocations#index_jtis"
     end
     namespace :external do
       get "/check", to: "identities#check"

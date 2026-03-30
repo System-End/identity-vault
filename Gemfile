@@ -159,3 +159,6 @@ end
 gem "premailer-rails", "~> 1.12"
 
 gem "openssl", "~> 3.3"
+
+gem "jwt", "~> 2.9"
+gem "ed25519", "~> 1.3"
