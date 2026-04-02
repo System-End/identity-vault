@@ -43,8 +43,9 @@ ENV BUNDLE_DEPLOYMENT="1" \
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
-# Dummy DATABASE_URL so Rails can boot during asset precompile (no real DB needed)
+# Dummy DB URLs so Rails can boot during asset precompile (no real DB needed)
 ENV DATABASE_URL=postgresql://localhost/dummy
+ENV ANALYTICS_DATABASE_URL=postgresql://localhost/dummy_analytics
 
 ARG LIBHEIF_VERSION=1.21.2
 ARG LIBHEIF_SHA256=79996de959d28ca82ef070c382304683f5cdaf04cbe2953a74587160a3710a36
