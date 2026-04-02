@@ -1,1 +1,2 @@
-FROM ghcr.io/system-end/auth:latest
+ARG OWNER=system-end
+FROM ghcr.io/${OWNER}/auth:latest
